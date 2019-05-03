@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html style="direction: ltr;"><head>
+
+
+  
+<meta content="text/html; charset=UTF-8" http-equiv="content-type"><title>PEPC: Parallel English-Persian Corpus</title>
+  
+ 
+  
+  
+  <meta content="Aitor" name="author"></head><body>
+<h1>PEPC: Parallel English-Persian Corpus Extracted from Wikipedia</h1>
+
+<p><strong>PEPC</strong> is a collection of parallel sentences in English and Persian languages extracted from Wikipedia documents using a bidirectional translation method.
+<p><strong>The Corpus:</strong>
+<ul>
+  <li>Click <a href="files_pepc/PEPC_Bidirectional.rar">here</a> to download the extracted corpus by our <strong>bidirectional method</strong>. It consists of <b>199936 sentence pairs</b> that have been aligned in order of the score calculated by Lucene IR System and our bisimilarity formula.</li>
+  <li>Click <a href="files_pepc/PEPC_Onedirectional.rar">here</a> to download the extracted corpus by <strong>one-directional method</strong>. It consists of <b>158339 sentence pairs</b> that have been aligned in order of the score calculated by Lucene IR System.</li>
+  <li>Click <a href="files_pepc/AK_Tune_200.rar">here</a> to get the <b>200 sentences</b> we used for tuning the translation machines implemented for testing the extracted corpora. These sentences have been taken from <b>paper abstracts</b> available online.</li>
+  <li>Click <a href="files_pepc/AK_Test_1K.rar">here</a> to download the <b>1000 sentences</b> we used for testing our translation machines. Some of them have been taken from <b>paper abstracts</b> and some have been <b>translated by professional translators</b>.</li>
+</ul>
+</p>
+<p><strong>Thesis and Paper:</strong>
+<ul>
+  <li>Click <a href="files_pepc/akbar_karimi_thesis.pdf">here</a> to get the <b>thesis</b> written on parallel sentence extraction from comparable corpora.</li>
+  <li>Click <a href="files_pepc/akbar_karimi_paper.pdf">here</a> to get the <b>paper</b> describing the bidirectional method and the results of the experiments carried out using the extracted corpus.</li>
+</ul>
+</p>
+<p><strong>The Bidirectional Method (Step by Step):</strong>
+<ol>
+  <li>The first step is to get the <b>Wikipedia documents</b> in English and Persian. We received this file from the owners of Linguatools website [1].</li>
+  <ul><li><a href="files_pepc/wikicomp-2016_enfa.xml.bz2">Download</a> the <b>Wikipedia documents</b> in XML format</li></ul>
+  <li>Next, the markup language, tables, links etc should be stripped from this XML file. 
+  <ul><li><a href="files_pepc/document_sentence_align.py">Download</a> the <b>python code</b> for removing extra characters</li></ul>
+  <li>While saving the documents, some document pairs, whose number of sentences was lower than 0.3 times one another, were ignored. 
+  <ul><li><a href="files_pepc/Wiki_2016_Plain_Text_Greater_Than_0.3.rar">Download</a> the <b>plain texts</b> with the above limitation</li></ul>
+  <li>We also did away with the limitation above and saved <b>all the documents</b>.
+  <ul><li><a href="files_pepc/Wiki2016_AllDocs.rar">Download</a> <b>all the documents</b> in plain text</li></ul>
+  <li>Then, it's time to translate these texts. To do this, two translation systems, one translating from Persian to English and the other from English to Persian, are implemented using Moses Toolkit [2]. 
+  To train these two machines, <b>OPUS (2016) Corpus</b> [3] which is a collection of movie subtitles was used. 
+  <ul><li><a href="http://opus.lingfil.uu.se/OpenSubtitles2016.php">Download</a> the <b>OPUS (2016) Corpus</b></li></ul>
+  <li>After that, the translated documents are split and then given to <b>Lucene IR System</b> [4] as queries to calculate the similarity between the translated sentences and the orginal ones.
+	Lucene's source code had to be modified to suit our purpose. We wanted Lucene to read the queries from the translated documents and break the original documents into one-sentence documents so that the similarity between sentences could be calculated.
+  <ul><li><a href="files_pepc/Lucene_Modified.rar">Download</a> <b>Lucene's modified version</b></li></ul>
+  <li>The output of Lucene is two text files containing the information about which lines of which English documents are similar to which lines of which Persian documents and the reverse along with the sentence length and their similarity score calculated by Lucene.
+  For each English line, there are several Persian candidates and vice versa. 
+  <ul><li><a href="files_pepc/Lucene_Output.rar">Download</a> <b>Lucene's output files</b></li></ul>
+  <li>For the two output files, a python code was written in order to choose the final equivalent for each sentence. In doing so, we applied our <b>bisimilarity formula</b> described in the paper.</li>
+  <ul><li><a href="files_pepc/bisimilarity_formula.py">Download</a> the <b>bisimilarity python code</b></li></ul>
+  <ul><li><a href="files_pepc/index_of_equivalents_with_similarity.txt">Download</a> the <b>index of the equivalent sentences with their bisimilarity scores</b></li></ul>
+  <li>The main output of the last step contains the index of the equivalent sentences. Examining these equivalents sentences reveals that there are some English sentences from the original Wikipedia file that have made their way to Persian files. They were deleted using another python code.  
+  <ul><li><a href="files_pepc/post-processing-final.py">Download</a> the <b>post-processing python code</b></li></ul>
+  <ul><li><a href="files_pepc/PEPC_with_index_and_similarity.rar">Download</a> the <b>extracted corpus</b> along with <b>its index</b> and <b>bisimilarity scores</b></li></ul>
+ </ol>
+</p>
+<br>
+<h3>References</h3>
+[1] http://linguatools.org/tools/corpora/wikipedia-comparable-corpora
+<br>
+<br>
+[2] Koehn, Philipp, et al. "Moses: Open source toolkit for statistical machine translation." Proceedings of the 45th annual meeting of the ACL on interactive poster and demonstration sessions. Association for Computational Linguistics, 2007. (<a href="Design of the Moses Decoder for Statistical Machine Translation.pdf">PDF</a>)
+<br>
+<br>
+[3] Lison, Pierre, and Jörg Tiedemann. "OpenSubtitles2016: Extracting Large Parallel Corpora from Movie and TV Subtitles." LREC. 2016. (<a href="OPUS.pdf">PDF</a>)
+<br>
+<br>
+[4] https://lucene.apache.org/
+<br>
+<br>
+<h3>Acknowledgements</h3>
+We'd like to thank our colleagues, Zahra Sepehri and Ailar Qaraie, at Iranzamin Language School for providing us with 500 sentences used in our test set. 
+<br>
+<br>
+</body></html>
